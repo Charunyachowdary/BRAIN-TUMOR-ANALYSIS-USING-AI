@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>To-Do List with Alarm</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      width: 350px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    input, button {
+      margin-top: 8px;
+    }
+
+    input[type="text"], input[type="datetime-local"] {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+    }
+
+    button {
+      padding: 8px 12px;
+      margin-top: 8px;
+      width: 100%;
+      border: none;
+      border-radius: 6px;
+      background: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #45a049;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 15px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    li {
+      padding: 8px;
+      margin: 5px 0;
+      background: #f9f9f9;
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    li.completed span {
+      text-decoration: line-through;
+      color: gray;
+    }
+
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .delete-btn {
+      background: red;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 4px 8px;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover {
+      background: darkred;
+    }
+
+    .alarm-time {
+      font-size: 12px;
+      color: #555;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>My To-Do List ⏰</h2>
+    <input type="text" id="taskInput" placeholder="Add a task">
+    <input type="datetime-local" id="alarmInput">
+    <button onclick="addTask()">Add Task with Alarm</button>
+    <ul id="taskList"></ul>
+  </div>
+
+  <script>
+    function addTask() {
+      let taskText = document.getElementById("taskInput").value.trim();
+      let alarmTime = document.getElementById("alarmInput").value;
+
+      if (taskText === "") {
+        alert("Please enter a task!");
+        return;
+      }
+
+      let li = document.createElement("li");
+
+      let taskHeader = document.createElement("div");
+      taskHeader.className = "task-header";
+
+      let span = document.createElement("span");
+      span.textContent = taskText;
+
+      // Toggle complete when clicked
+      span.addEventListener("click", function () {
+        li.classList.toggle("completed");
+      });
+
+      let delBtn = document.createElement("button");
+      delBtn.textContent = "X";
+      delBtn.className = "delete-btn";
+      delBtn.onclick = function () {
+        li.remove();
+      };
+
+      taskHeader.appendChild(span);
+      taskHeader.appendChild(delBtn);
+      li.appendChild(taskHeader);
+
+      // If alarm is set, show it
+      if (alarmTime) {
+        let alarmLabel = document.createElement("div");
+        alarmLabel.className = "alarm-time";
+        alarmLabel.textContent = "Reminder at: " + new Date(alarmTime).toLocaleString();
+        li.appendChild(alarmLabel);
+
+        let alarmDate = new Date(alarmTime);
+        let now = new Date();
+        let timeToAlarm = alarmDate.getTime() - now.getTime();
+
+        if (timeToAlarm > 0) {
+          setTimeout(() => {
+            alert("⏰ Reminder: " + taskText);
+          }, timeToAlarm);
+        }
+      }
+
+      document.getElementById("taskList").appendChild(li);
+
+      // Clear inputs
+      document.getElementById("taskInput").value = "";
+      document.getElementById("alarmInput").value = "";
+    }
+  </script>
+</body>
+</html>

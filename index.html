@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>UCEOU — Student Portal</title>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<div id="toast"></div>
+<div id="session-modal" class="modal-overlay" style="display:none">
+  <div class="modal-box">
+    <h3>⚠️ Session Expiring</h3>
+    <p>You will be logged out in <span id="session-countdown">60</span> seconds.</p>
+    <button class="btn-primary" onclick="resetSession()">Stay Logged In</button>
+  </div>
+</div>
+
+<!-- ===== LANDING ===== -->
+<div id="pg-landing" class="page active">
+  <div class="landing-bg">
+    <div class="landing-card">
+      <div class="landing-head">
+        <div class="univ-logo">U</div>
+        <h1>University College of Engineering</h1>
+        <p>OSMANIA UNIVERSITY — EAF PORTAL v3.0</p>
+      </div>
+      <div class="landing-body">
+        <h2>Select Login Type</h2>
+        <div class="role-grid">
+          <div class="role-card" onclick="show('pg-student-login')">
+            <div class="role-icon">🎓</div>
+            <div class="role-title">Student Login</div>
+            <div class="role-sub">Access marks, attendance &amp; career portal</div>
+          </div>
+          <div class="role-card" onclick="show('pg-admin-login')">
+            <div class="role-icon">🔐</div>
+            <div class="role-title">Admin Login</div>
+            <div class="role-sub">Manage students, marks &amp; fees</div>
+          </div>
+          <div class="role-card" onclick="show('pg-parent-login')">
+            <div class="role-icon">👨‍👩‍👧</div>
+            <div class="role-title">Parent Login</div>
+            <div class="role-sub">Monitor attendance &amp; performance</div>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+          <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">New student? Create your portal account</p>
+          <button class="btn-enroll" onclick="show('pg-enroll')">📝 New Student Enrollment</button>
+        </div>
+      </div>
+      <div class="landing-footer">University College of Engineering, Osmania University, Hyderabad — 500007</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== STUDENT LOGIN ===== -->
+<div id="pg-student-login" class="page">
+  <div class="login-bg">
+    <div class="login-card">
+      <div class="lh">
+        <div class="lh-em">🎓</div>
+        <h2>Student Login</h2>
+        <p>UCEOU — EAF PORTAL</p>
+      </div>
+      <div class="lb">
+        <div class="hint">Demo: <strong>21UCECS001</strong> / <strong>student123</strong> &nbsp;|&nbsp; <strong>20UCECS001</strong> / <strong>nisha123</strong></div>
+        <div class="err" id="s-login-err"></div>
+        <div class="fg">
+          <label><span class="r">* </span>Hall Ticket No / Roll No</label>
+          <input type="text" id="s-roll" placeholder="e.g. 21UCECS001" autocomplete="off" oninput="this.value=this.value.toUpperCase()"/>
+        </div>
+        <div class="fg">
+          <label><span class="r">* </span>Password</label>
+          <div class="pw-wrap">
+            <input type="password" id="s-pwd" placeholder="Enter password"/>
+            <button class="pw-toggle" onclick="togglePw('s-pwd',this)" tabindex="-1">👁</button>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:13px">
+          <input type="checkbox" id="s-remember" style="width:auto"/>
+          <label for="s-remember" style="font-size:12px;color:#555;font-weight:400;text-transform:none;letter-spacing:0">Remember me</label>
+        </div>
+        <button class="btn-primary" onclick="studentLogin()">Login</button>
+        <div style="display:flex;justify-content:space-between;margin-top:14px;flex-wrap:wrap;gap:8px">
+          <button class="ll" onclick="show('pg-landing')">&#8592; Back</button>
+          <button class="ll" onclick="show('pg-enroll')">New User? Enroll Here</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ADMIN LOGIN ===== -->
+<div id="pg-admin-login" class="page">
+  <div class="login-bg" style="background:linear-gradient(135deg,#1a1a2e,#16213e)">
+    <div class="login-card">
+      <div class="lh" style="background:#1a1a2e;border-bottom-color:#e74c3c">
+        <div class="lh-em" style="background:#e74c3c;color:#fff">🔐</div>
+        <h2>Admin Login</h2>
+        <p>UCEOU ADMINISTRATION PANEL</p>
+      </div>
+      <div class="lb">
+        <div class="hint">Username: <strong>admin</strong> &nbsp;|&nbsp; Password: <strong>admin@uceou123</strong></div>
+        <div class="err" id="a-login-err"></div>
+        <div class="fg"><label><span class="r">* </span>Username</label><input type="text" id="a-user" placeholder="Enter username"/></div>
+        <div class="fg">
+          <label><span class="r">* </span>Password</label>
+          <div class="pw-wrap">
+            <input type="password" id="a-pwd" placeholder="Enter password"/>
+            <button class="pw-toggle" onclick="togglePw('a-pwd',this)" tabindex="-1">👁</button>
+          </div>
+        </div>
+        <button class="btn-primary" style="background:#1a1a2e;border-bottom-color:#e74c3c" onclick="adminLogin()">Login as Admin</button>
+        <div style="text-align:center;margin-top:14px"><button class="ll" onclick="show('pg-landing')">&#8592; Back</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PARENT LOGIN ===== -->
+<div id="pg-parent-login" class="page">
+  <div class="login-bg" style="background:linear-gradient(135deg,#1a4a2e,#27ae60)">
+    <div class="login-card">
+      <div class="lh" style="background:#1a4a2e;border-bottom-color:#2ecc71">
+        <div class="lh-em" style="background:#2ecc71;color:#1a4a2e">👨‍👩‍👧</div>
+        <h2>Parent Login</h2>
+        <p>UCEOU PARENT MONITORING PORTAL</p>
+      </div>
+      <div class="lb">
+        <div class="hint">Use student Roll No and their password to access</div>
+        <div class="err" id="p-login-err"></div>
+        <div class="fg"><label><span class="r">* </span>Student Roll No</label><input type="text" id="p-roll" placeholder="e.g. 21UCECS001" oninput="this.value=this.value.toUpperCase()"/></div>
+        <div class="fg">
+          <label><span class="r">* </span>Password</label>
+          <div class="pw-wrap">
+            <input type="password" id="p-pwd" placeholder="Student's password"/>
+            <button class="pw-toggle" onclick="togglePw('p-pwd',this)" tabindex="-1">👁</button>
+          </div>
+        </div>
+        <button class="btn-primary" style="background:#1a4a2e;border-bottom-color:#2ecc71" onclick="parentLogin()">Login as Parent</button>
+        <div style="text-align:center;margin-top:14px"><button class="ll" onclick="show('pg-landing')">&#8592; Back</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== NEW ENROLLMENT ===== -->
+<div id="pg-enroll" class="page">
+  <div class="login-bg" style="align-items:flex-start;padding-top:24px">
+    <div class="login-card" style="max-width:500px">
+      <div class="lh">
+        <div class="lh-em" style="font-size:18px">📝</div>
+        <h2>New Student Enrollment</h2>
+        <p>CREATE YOUR PORTAL ACCOUNT</p>
+      </div>
+      <div class="lb">
+        <button class="ll" style="margin-bottom:13px" onclick="show('pg-landing')">&#8592; Back to Home</button>
+
+        <!-- Step progress -->
+        <div class="enroll-steps">
+          <div class="estep active" id="es1">1. Identity</div>
+          <div class="estep" id="es2">2. Academic</div>
+          <div class="estep" id="es3">3. Security</div>
+          <div class="estep" id="es4">4. Done</div>
+        </div>
+
+        <div class="err" id="en-err"></div>
+        <div class="ok-box" id="en-ok"></div>
+
+        <!-- Step 1: Identity -->
+        <div id="en-step1">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="fg"><label><span class="r">* </span>Hall Ticket / Roll No</label><input type="text" id="en-roll" placeholder="e.g. 23UCECS005" oninput="this.value=this.value.toUpperCase()"/></div>
+            <div class="fg"><label><span class="r">* </span>Date of Birth</label><input type="text" id="en-dob" placeholder="DD-Mon-YYYY"/></div>
+          </div>
+          <div class="fg"><label><span class="r">* </span>Full Name</label><input type="text" id="en-name" placeholder="As per records"/></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="fg"><label><span class="r">* </span>Mobile</label><input type="text" id="en-mobile" placeholder="10-digit mobile"/></div>
+            <div class="fg"><label>Email</label><input type="email" id="en-email" placeholder="your@email.com"/></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="fg"><label>Gender</label><select id="en-gender"><option>Male</option><option>Female</option><option>Other</option></select></div>
+            <div class="fg"><label>Category</label><select id="en-category"><option>OC</option><option>BC-A</option><option>BC-B</option><option>BC-C</option><option>BC-D</option><option>SC</option><option>ST</option></select></div>
+          </div>
+          <button class="btn-primary" onclick="enrollNext(1)">Next &rarr;</button>
+        </div>
+
+        <!-- Step 2: Academic -->
+        <div id="en-step2" style="display:none">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="fg"><label><span class="r">* </span>Branch</label>
+              <select id="en-branch">
+                <option value="">Select Branch</option>
+                <option>CSE</option><option>AIML</option><option>ECE</option>
+                <option>EEE</option><option>MECH</option><option>MINING</option><option>BIOMEDICAL</option>
+              </select>
+            </div>
+            <div class="fg"><label><span class="r">* </span>Year</label>
+              <select id="en-year">
+                <option value="">Select Year</option>
+                <option>I Year</option><option>II Year</option><option>III Year</option><option>IV Year</option>
+              </select>
+            </div>
+          </div>
+          <div class="fg"><label><span class="r">* </span>Semester</label>
+            <select id="en-sem">
+              <option value="">Select Semester</option>
+              <option>I Sem</option><option>II Sem</option><option>III Sem</option><option>IV Sem</option>
+              <option>V Sem</option><option>VI Sem</option><option>VII Sem</option><option>VIII Sem</option>
+            </select>
+          </div>
+          <div class="fg"><label>Admission Type</label>
+            <select id="en-adm"><option>Regular</option><option>Lateral Entry</option></select>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn-primary" style="background:#666;border-bottom-color:#444" onclick="enrollBack(1)">&#8592; Back</button>
+            <button class="btn-primary" onclick="enrollNext(2)">Next &rarr;</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Security -->
+        <div id="en-step3" style="display:none">
+          <div class="fg">
+            <label><span class="r">* </span>Set Password</label>
+            <div class="pw-wrap">
+              <input type="password" id="en-pwd" placeholder="Min 8 characters" oninput="checkPwStrength(this.value,'en-str-fill','en-str-label')"/>
+              <button class="pw-toggle" onclick="togglePw('en-pwd',this)" tabindex="-1">👁</button>
+            </div>
+            <div class="strength-bar"><div id="en-str-fill"></div></div>
+            <div id="en-str-label" style="font-size:11px;margin-top:3px"></div>
+          </div>
+          <div class="fg">
+            <label><span class="r">* </span>Confirm Password</label>
+            <input type="password" id="en-cpwd" placeholder="Re-enter password"/>
+          </div>
+          <div class="info-box" style="font-size:12px">
+            ✅ Your account will be created with the entered details.<br>
+            You can update your profile after logging in.
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn-primary" style="background:#666;border-bottom-color:#444" onclick="enrollBack(2)">&#8592; Back</button>
+            <button class="btn-primary" onclick="submitEnrollment()">Create Account ✓</button>
+          </div>
+        </div>
+
+        <!-- Step 4: Success -->
+        <div id="en-step4" style="display:none;text-align:center;padding:20px 0">
+          <div style="font-size:48px;margin-bottom:12px">🎉</div>
+          <h3 style="color:#2e7d32;margin-bottom:8px">Enrollment Successful!</h3>
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:18px">
+            Your account has been created.<br>You can now log in to the portal.
+          </p>
+          <button class="btn-primary" onclick="show('pg-student-login')">Go to Login</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== STUDENT APP ===== -->
+<div id="pg-student" class="page app-shell">
+  <div class="topbar">
+    <div class="tb-left">
+      <button class="hb" onclick="toggleSb('student-sidebar')">&#9776;</button>
+      <div class="brand"><div class="brand-logo">U</div><span class="brand-name">UCEOU</span></div>
+    </div>
+    <div class="tb-center">
+      <div class="search-wrap">
+        <input type="text" id="global-search" placeholder="🔍 Search sections..." oninput="liveSearch(this.value)" autocomplete="off"/>
+        <div id="search-results" class="search-dropdown"></div>
+      </div>
+    </div>
+    <div class="tb-right">
+      <div id="live-clock" class="live-clock"></div>
+      <button class="btn-theme" onclick="toggleTheme()">🌙</button>
+      <button class="btn-lo" onclick="logout('student')">→ Log Out</button>
+    </div>
+  </div>
+  <div class="body-wrap">
+    <div class="sidebar" id="student-sidebar">
+      <div class="profile-box">
+        <div class="av" id="student-av"><svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg></div>
+        <div class="p-roll" id="st-roll-display"></div>
+        <div class="p-name" id="st-name-display"></div>
+        <div class="p-course" id="st-course-display"></div>
+      </div>
+      <div class="nav-menu">
+        <div class="ni active" onclick="sGo('s-dashboard',this)"><span class="ico">🏠</span> Home</div>
+        <div class="ni" onclick="sGo('s-profile',this)"><span class="ico">👤</span> My Profile</div>
+        <div class="ni" onclick="sGo('s-attendance',this)"><span class="ico">📋</span> Attendance</div>
+        <div class="ni" onclick="sGo('s-marks',this)"><span class="ico">📊</span> Internal Marks</div>
+        <div class="ni" onclick="sGo('s-results',this)"><span class="ico">🏆</span> Results</div>
+        <div class="ni" onclick="sGo('s-fees',this)"><span class="ico">💰</span> Fee Details</div>
+        <div class="ni" onclick="sGo('s-timetable',this)"><span class="ico">📅</span> Timetable</div>
+        <div class="ni" onclick="sGo('s-notifications',this)"><span class="ico">🔔</span> Notifications</div>
+        <div class="ni" onclick="sGo('s-cgpa',this)"><span class="ico">🧮</span> CGPA Calculator</div>
+        <div class="ni" onclick="sGo('s-resume',this)"><span class="ico">💼</span> Resume / Career</div>
+        <div class="ni" onclick="logout('student')"><span class="ico">→</span> Log Out</div>
+      </div>
+      <div class="sidebar-footer">University College of Engineering</div>
+    </div>
+    <div class="main">
+      <div class="breadcrumb"><span onclick="sGo('s-dashboard',null)">Home</span><span id="s-bc"></span></div>
+      <div class="main-content" id="student-mc"></div>
+      <div class="page-footer"><span>University College of Engineering, Osmania University</span><span>Phone: 040-27097140</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ADMIN APP ===== -->
+<div id="pg-admin" class="page app-shell">
+  <div class="topbar admin-topbar">
+    <div class="tb-left">
+      <button class="hb" onclick="toggleSb('admin-sidebar')">&#9776;</button>
+      <div class="brand"><div class="brand-logo" style="background:#e74c3c;color:#fff">A</div><span class="brand-name">UCEOU Admin</span></div>
+    </div>
+    <div class="tb-center">
+      <div class="search-wrap">
+        <input type="text" id="admin-search" placeholder="🔍 Search students..." oninput="adminSearch(this.value)" autocomplete="off"/>
+        <div id="admin-search-results" class="search-dropdown"></div>
+      </div>
+    </div>
+    <div class="tb-right">
+      <div id="admin-clock" class="live-clock"></div>
+      <button class="btn-theme" onclick="toggleTheme()">🌙</button>
+      <button class="btn-lo" onclick="logout('admin')">→ Log Out</button>
+    </div>
+  </div>
+  <div class="body-wrap">
+    <div class="sidebar admin-sidebar" id="admin-sidebar">
+      <div class="profile-box">
+        <div class="av" style="background:#c0392b;font-size:28px;color:#fff">🔐</div>
+        <div class="p-roll" style="color:rgba(255,200,200,0.8)">Administrator</div>
+        <div class="p-name" id="admin-name-display"></div>
+        <div class="p-course" id="admin-role-display"></div>
+      </div>
+      <div class="nav-menu">
+        <div class="ni active" onclick="aGo('a-dashboard',this)"><span class="ico">📊</span> Dashboard</div>
+        <div class="ni" onclick="aGo('a-students',this)"><span class="ico">👥</span> All Students</div>
+        <div class="ni" onclick="aGo('a-marks',this)"><span class="ico">📝</span> Upload Marks</div>
+        <div class="ni" onclick="aGo('a-attendance',this)"><span class="ico">📋</span> Upload Attendance</div>
+        <div class="ni" onclick="aGo('a-fees',this)"><span class="ico">💰</span> Update Fee Status</div>
+        <div class="ni" onclick="aGo('a-add-student',this)"><span class="ico">➕</span> Add Student</div>
+        <div class="ni" onclick="aGo('a-reports',this)"><span class="ico">📈</span> Reports</div>
+        <div class="ni" onclick="logout('admin')"><span class="ico">→</span> Log Out</div>
+      </div>
+      <div class="sidebar-footer">Admin Panel v3.0</div>
+    </div>
+    <div class="main">
+      <div class="breadcrumb"><span onclick="aGo('a-dashboard',null)">Admin</span><span id="a-bc"></span></div>
+      <div class="main-content" id="admin-mc"></div>
+      <div class="page-footer"><span>UCEOU Admin Panel</span><span>All changes are saved to server database</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PARENT APP ===== -->
+<div id="pg-parent" class="page app-shell">
+  <div class="topbar" style="background:#1a4a2e">
+    <div class="tb-left"><div class="brand"><div class="brand-logo" style="background:#2ecc71;color:#1a4a2e">P</div><span class="brand-name">Parent Portal</span></div></div>
+    <div class="tb-right">
+      <button class="btn-theme" onclick="toggleTheme()">🌙</button>
+      <button class="btn-lo" onclick="logout('parent')">→ Log Out</button>
+    </div>
+  </div>
+  <div class="body-wrap">
+    <div class="main">
+      <div class="main-content" id="parent-mc"></div>
+      <div class="page-footer" style="background:#1a4a2e"><span>University College of Engineering</span><span>Phone: 040-27097140</span></div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

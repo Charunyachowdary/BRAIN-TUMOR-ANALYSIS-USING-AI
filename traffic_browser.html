@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Traffic System Simulator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f6fb;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .panel {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      padding: 24px;
+      width: 700px;
+      max-width: 95%;
+    }
+    h1 { text-align: center; margin-top: 0; }
+    .controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+    button {
+      padding: 10px 14px; border: none; border-radius: 8px; cursor: pointer;
+      background: #4a6cf7; color: white; font-weight: bold;
+    }
+    button:hover { background: #3558c8; }
+    .road-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 16px;
+    }
+    .road-card {
+      background: #f8fafc; border: 1px solid #dde4ef; border-radius: 12px; padding: 12px;
+    }
+    .signal {
+      margin-top: 8px; padding: 8px; border-radius: 8px; font-weight: bold; text-align: center; color: white; background: #555;
+    }
+    .signal.green { background: #2ecc71; }
+    .signal.yellow { background: #f1c40f; color: #222; }
+    .signal.red { background: #e74c3c; }
+    .status { margin-top: 12px; font-size: 15px; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <h1>Traffic System Simulator</h1>
+    <div class="controls">
+      <button id="autoBtn">AUTO</button>
+      <button class="roadBtn" data-road="0">Road 0</button>
+      <button class="roadBtn" data-road="1">Road 1</button>
+      <button class="roadBtn" data-road="2">Road 2</button>
+      <button class="roadBtn" data-road="3">Road 3</button>
+    </div>
+    <div class="status">
+      <div><strong>Mode:</strong> <span id="modeText">Auto</span></div>
+      <div><strong>Current Green:</strong> <span id="currentGreen">Road 0</span></div>
+      <div><strong>Timer:</strong> <span id="timerText">10</span></div>
+      <div><strong>Phase:</strong> <span id="phaseText">Green</span></div>
+    </div>
+    <div class="road-grid" id="roadGrid"></div>
+  </div>
+
+  <script>
+    const roads = Array.from({ length: 4 }, () => ({ traffic: 10, state: 'RED' }));
+    let currentGreen = 0;
+    let timer = 10;
+    let phase = 'GREEN';
+    let manualMode = false;
+    let manualRoad = -1;
+
+    const modeText = document.getElementById('modeText');
+    const currentGreenText = document.getElementById('currentGreen');
+    const timerText = document.getElementById('timerText');
+    const phaseText = document.getElementById('phaseText');
+    const roadGrid = document.getElementById('roadGrid');
+
+    function controlSignals() {
+      roads.forEach((road) => road.state = 'RED');
+      if (manualMode && manualRoad >= 0) {
+        roads[manualRoad].state = 'GREEN';
+        return;
+      }
+      if (phase === 'GREEN') roads[currentGreen].state = 'GREEN';
+      else roads[currentGreen].state = 'YELLOW';
+    }
+
+    function selectNextRoad() {
+      let maxTraffic = 0;
+      let selected = currentGreen;
+      roads.forEach((road, index) => {
+        if (road.traffic > maxTraffic) {
+          maxTraffic = road.traffic;
+          selected = index;
+        }
+      });
+      if (maxTraffic < 30) selected = (currentGreen + 1) % roads.length;
+      currentGreen = selected;
+    }
+
+    function updateDisplay() {
+      modeText.textContent = manualMode ? 'Manual' : 'Auto';
+      currentGreenText.textContent = `Road ${currentGreen}`;
+      timerText.textContent = timer;
+      phaseText.textContent = phase;
+      roadGrid.innerHTML = '';
+      roads.forEach((road, index) => {
+        const card = document.createElement('div');
+        card.className = 'road-card';
+        card.innerHTML = `
+          <strong>Road ${index}</strong><br/>
+          Traffic: ${road.traffic}<br/>
+          <div class="signal ${road.state.toLowerCase()}">${road.state}</div>
+        `;
+        roadGrid.appendChild(card);
+      });
+    }
+
+    function tick() {
+      timer--;
+      if (timer === 3 && phase === 'GREEN') phase = 'YELLOW';
+      if (timer <= 0) {
+        selectNextRoad();
+        phase = 'GREEN';
+        timer = 10;
+      }
+      controlSignals();
+      updateDisplay();
+    }
+
+    setInterval(() => {
+      if (!manualMode) tick();
+    }, 1000);
+
+    document.getElementById('autoBtn').addEventListener('click', () => {
+      manualMode = false;
+      manualRoad = -1;
+      controlSignals();
+      updateDisplay();
+    });
+
+    document.querySelectorAll('.roadBtn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        manualMode = true;
+        manualRoad = Number(btn.dataset.road);
+        controlSignals();
+        updateDisplay();
+      });
+    });
+
+    controlSignals();
+    updateDisplay();
+  </script>
+</body>
+</html>
